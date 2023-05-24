@@ -1,0 +1,48 @@
+import socket
+
+def crc(data, generator):
+    # perform CRC division on the data using the generator polynomial
+    dividend = data + "0" * (len(generator) - 1)
+    divisor = generator
+    remainder = ""
+    
+    for i in range(len(generator)):
+        remainder += dividend[i]
+        
+    for i in range(len(generator), len(dividend)):
+        if remainder[0] == "1":
+            temp = ""
+            for j in range(len(generator)):
+                temp += str(int(remainder[j]) ^ int(divisor[j]))
+            remainder = temp[1:] + dividend[i]
+        else:
+            remainder = remainder[1:] + dividend[i]
+            
+    return remainder
+
+# create a socket object
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# connect to the server
+host = "localhost"
+port = 9999
+client_socket.connect((host, port))
+print("Connected to server:", (host, port))
+
+# send data to the server
+data = "10101010101010" # sample data
+client_socket.send(data.encode())
+print("Sent data to server:", data)
+
+# receive CRC code from the server
+crc_code = client_socket.recv(1024).decode()
+print("Received CRC code from server:", crc_code)
+
+# check for errors in the data transmission
+if crc(data + crc_code, "1011") == "000":
+    print("No errors detected in the data transmission.")
+else:
+    print("Errors detected in the data transmission.")
+
+# close the socket
+client_socket.close()
