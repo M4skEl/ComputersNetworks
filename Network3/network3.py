@@ -68,4 +68,3 @@ print(f'Decoded text: {decoded_text}')
 print(f'Encoded text size (bytes): {len(encoded_text)/8}')
 compression_ratio = len(encoded_text) / (8*len(text))
 print(f'Compression ratio: {compression_ratio:.2f}')
-
